@@ -18,6 +18,7 @@
 
 package io.github.mzmine.modules.io.mztabmexport;
 
+import com.google.common.collect.Range;
 import de.isas.mztab2.io.MzTabValidatingWriter;
 import de.isas.mztab2.model.*;
 import io.github.mzmine.datamodel.*;
@@ -283,6 +284,21 @@ public class MZTabmExportTask extends AbstractTask {
             if (rowRT != null) {
               smf.setRetentionTimeInSeconds(rowRT);
             }
+
+            List<Double> RTpoints = new ArrayList<>();
+            //Points to be added in range for computing union of all ranges
+            RTpoints.add(rowRT);
+            for(Feature f : peakListRow.getPeaks()){
+              if(f.getRawDataPointsRTRange().hasLowerBound())
+                RTpoints.add(f.getRawDataPointsRTRange().lowerEndpoint());
+              if(f.getRawDataPointsRTRange().hasUpperBound())
+                RTpoints.add(f.getRawDataPointsRTRange().upperEndpoint());
+              System.out.println(f.getRawDataPointsRTRange()+" "+rowRT);
+            }
+            Range<Double> RTRange = Range.encloseAll(RTpoints);
+            smf.setRetentionTimeInSecondsStart(RTRange.lowerEndpoint());
+            smf.setRetentionTimeInSecondsEnd(RTRange.upperEndpoint());
+
             int dataFileCount = 0;
             Hashtable<String, List<Double>> sampleVariableAbundancehash = new Hashtable<>();
             for (RawDataFile dataFile : rawDataFiles) {

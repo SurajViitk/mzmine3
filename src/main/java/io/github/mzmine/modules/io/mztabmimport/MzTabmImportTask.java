@@ -407,7 +407,9 @@ public class MzTabmImportTask extends AbstractTask {
         int fragmentScan = 0;
         int[] allFragmentScans = new int[]{0};
 
-        Range<Double> finalRTRange = Range.singleton(peak_rt);
+        Range<Double> finalRTRange = Range.closed
+            (smf.getRetentionTimeInSecondsStart(),smf.getRetentionTimeInSecondsEnd());
+
         Range<Double> finalMZRange = Range.singleton(peak_mz);
         Range<Double> finalIntensityRange = Range.singleton(peak_height);
         FeatureStatus status = FeatureStatus.DETECTED;
